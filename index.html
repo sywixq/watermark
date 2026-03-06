@@ -6,34 +6,33 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body {
-    background: transparent;
+    background: transparent !important;
     overflow: hidden;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
+    width: 100vw;
+    height: 100vh;
   }
   .bar {
+    position: fixed;
+    top: 8px;
+    left: 8px;
     display: inline-flex;
     align-items: center;
     background: rgba(18, 18, 20, 0.88);
     border-radius: 6px;
     overflow: hidden;
-    margin: 6px;
     font-family: 'DM Mono', monospace;
   }
   .logo-section {
     display: flex;
     align-items: center;
-    padding: 6px 12px;
+    padding: 5px 11px;
     background: rgba(255,255,255,0.04);
     border-right: 1px solid rgba(255,255,255,0.08);
   }
   .logo-text {
     font-family: 'Cinzel', serif;
     font-weight: 900;
-    font-size: 14px;
+    font-size: 13px;
     letter-spacing: 3px;
     background: linear-gradient(90deg, #3a5bd9 0%, #6b8ef5 25%, #ffffff 50%, #f07070 75%, #ED2939 100%);
     -webkit-background-clip: text;
@@ -43,9 +42,9 @@
   .info {
     display: flex;
     align-items: center;
-    padding: 6px 14px;
+    padding: 5px 12px;
     color: #cccccc;
-    font-size: 12px;
+    font-size: 11px;
     border-right: 1px solid rgba(255,255,255,0.06);
     white-space: nowrap;
   }
@@ -61,6 +60,7 @@
     <div class="info" id="date">--</div>
     <div class="info expires">Never expires</div>
   </div>
+
   <script>
     var d = new Date();
     var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -68,6 +68,9 @@
 
     window.addEventListener('message', function(e) {
       if (e.data && e.data.type === 'setPlayerId') {
+        document.getElementById('pid').textContent = e.data.id;
+      }
+      if (e.data && e.data.id) {
         document.getElementById('pid').textContent = e.data.id;
       }
     });
