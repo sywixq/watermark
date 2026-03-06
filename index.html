@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: transparent;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .bar {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(18, 18, 20, 0.88);
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 6px;
+    font-family: 'DM Mono', monospace;
+  }
+  .logo-section {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.04);
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+  .logo-text {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, #3a5bd9 0%, #6b8ef5 25%, #ffffff 50%, #f07070 75%, #ED2939 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .info {
+    display: flex;
+    align-items: center;
+    padding: 6px 14px;
+    color: #cccccc;
+    font-size: 12px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    white-space: nowrap;
+  }
+  .info:last-child { border-right: none; }
+  .info.expires { color: #4caf7d; font-weight: 500; }
+</style>
+</head>
+<body>
+  <div class="bar">
+    <div class="logo-section"><span class="logo-text">REX</span></div>
+    <div class="info">sywix</div>
+    <div class="info" id="pid">...</div>
+    <div class="info" id="date">--</div>
+    <div class="info expires">Never expires</div>
+  </div>
+  <script>
+    var d = new Date();
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    document.getElementById('date').textContent = months[d.getMonth()] + ' ' + d.getDate() + ' ' + d.getFullYear();
+
+    window.addEventListener('message', function(e) {
+      if (e.data && e.data.type === 'setPlayerId') {
+        document.getElementById('pid').textContent = e.data.id;
+      }
+    });
+  </script>
+</body>
+</html>
