@@ -62,20 +62,15 @@
   </div>
 
   <script>
-    var d = new Date();
-    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    document.getElementById('date').textContent = months[d.getMonth()] + ' ' + d.getDate() + ' ' + d.getFullYear();
-
     window.addEventListener('message', function(e) {
-      if (e.data && e.data.type === 'setPlayerId') {
+      if (!e.data) return;
+      if (e.data.type === 'setPlayerId') {
         document.getElementById('pid').textContent = e.data.id;
       }
-      if (e.data && e.data.id) {
-        document.getElementById('pid').textContent = e.data.id;
+      if (e.data.type === 'setExpire') {
+        document.getElementById('date').textContent = e.data.date;
       }
     });
   </script>
 </body>
-
 </html>
-
