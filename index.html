@@ -2,7 +2,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body {
@@ -13,62 +12,161 @@
   }
   .bar {
     position: fixed;
-    top: 8px;
-    right: 8px;
+    top: 10px;
+    left: 12px;
     display: inline-flex;
     align-items: center;
-    background: rgba(18, 18, 20, 0.88);
-    border-radius: 6px;
+    height: 32px;
+    padding: 0 4px;
+    background: linear-gradient(180deg, rgba(18, 18, 20, 0.82), rgba(10, 10, 12, 0.88));
+    border: 1px solid rgba(255, 200, 80, 0.22);
+    border-radius: 7px;
     overflow: hidden;
-    font-family: 'DM Mono', monospace;
+    font-family: Arial, sans-serif;
+    color: #d7d7d7;
+    backdrop-filter: blur(1.5px);
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.45) inset;
+  }
+  .cell {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 11px;
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .cell:last-child {
+    border-right: none;
   }
   .logo-section {
-    display: flex;
-    align-items: center;
-    padding: 5px 11px;
-    background: rgba(255,255,255,0.04);
-    border-right: 1px solid rgba(255,255,255,0.08);
+    padding: 0 10px 0 8px;
+    gap: 6px;
   }
-  .logo-text {
-    font-family: 'Cinzel', serif;
-    font-weight: 900;
-    font-size: 13px;
-    letter-spacing: 3px;
-    background: linear-gradient(90deg, #3a5bd9 0%, #6b8ef5 25%, #ffffff 50%, #f07070 75%, #ED2939 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .logo-image {
+    display: block;
+    height: 12px;
+    width: auto;
+    filter: brightness(0) invert(1);
+  }
+  .brand {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1;
+    color: #d6d6d6;
+    letter-spacing: 0;
   }
   .info {
-    display: flex;
-    align-items: center;
-    padding: 5px 12px;
-    color: #cccccc;
-    font-size: 11px;
-    border-right: 1px solid rgba(255,255,255,0.06);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1;
+    color: #d1d1d1;
     white-space: nowrap;
   }
-  .info:last-child { border-right: none; }
-  .info.expires { color: #ED2939; font-weight: 500; }
+  .info.expires {
+    color: #d7d7d7;
+    font-weight: 400;
+  }
 </style>
 </head>
 <body>
   <div class="bar">
-    <div class="logo-section"><span class="logo-text">REX</span></div>
-    <div class="info">The Best</div>
-    <div class="info" id="pid">User</div>
-    <div class="info" id="date">--</div>
-    <div class="info expires">Get Good, Get Rex</div>
+    <div class="logo-section cell">
+      <img class="logo-image" src="https://files.catbox.moe/ad6mrr.png" alt="REX logo">
+      <span class="brand">Rex</span>
+    </div>
+    <div class="info cell" id="name">ireasses</div>
+    <div class="info cell" id="pid">01940</div>
+    <div class="info cell" id="date">--</div>
+    <div class="info expires cell" id="expire">Expires in 11-03-2026</div>
   </div>
 
   <script>
+    function readQuery(keys) {
+      var params = new URLSearchParams(window.location.search);
+      for (var i = 0; i < keys.length; i++) {
+        var val = params.get(keys[i]);
+        if (val) return val;
+      }
+      return '';
+    }
+
+    function autoUsername() {
+      var fromQuery = readQuery(['username', 'name', 'user']);
+      if (fromQuery) return fromQuery;
+
+      var fromLocal = localStorage.getItem('rex_username') || localStorage.getItem('username');
+      if (fromLocal) return fromLocal;
+
+      if (typeof window.__REX_USERNAME__ === 'string' && window.__REX_USERNAME__) {
+        return window.__REX_USERNAME__;
+      }
+
+      return 'User';
+    }
+
+    function autoPlayerId() {
+      return readQuery(['pid', 'id']) || document.getElementById('pid').textContent;
+    }
+
+    function autoExpire() {
+      var fromQuery = readQuery(['expire', 'exp', 'expires']);
+      if (fromQuery) return fromQuery;
+
+      var fromLocal = localStorage.getItem('rex_expire') || localStorage.getItem('expire');
+      if (fromLocal) return fromLocal;
+
+      if (typeof window.__REX_EXPIRE__ === 'string' && window.__REX_EXPIRE__) {
+        return window.__REX_EXPIRE__;
+      }
+
+      return '';
+    }
+
+    function formatDate(value) {
+      if (!value) return '--';
+      return value;
+    }
+
+    function getTodayText() {
+      var now = new Date();
+      return now.toLocaleDateString('en-US', {
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric'
+      }).replace(',', '');
+    }
+
+    function setTodayDate() {
+      document.getElementById('date').textContent = getTodayText();
+    }
+
+    document.getElementById('name').textContent = autoUsername();
+    document.getElementById('pid').textContent = autoPlayerId();
+    var expireText = autoExpire();
+    if (expireText) {
+      document.getElementById('expire').textContent = 'Expires in ' + formatDate(expireText);
+    }
+    setTodayDate();
+    setInterval(setTodayDate, 60000);
+
     window.addEventListener('message', function(e) {
       if (!e.data) return;
+      if (e.data.type === 'setName') {
+        document.getElementById('name').textContent = e.data.name;
+      }
+      if (e.data.type === 'setUsername') {
+        document.getElementById('name').textContent = e.data.username;
+      }
       if (e.data.type === 'setPlayerId') {
         document.getElementById('pid').textContent = e.data.id;
       }
+      if (e.data.type === 'setDate') {
+        document.getElementById('date').textContent = formatDate(e.data.date);
+      }
       if (e.data.type === 'setExpire') {
-        document.getElementById('date').textContent = e.data.date;
+        document.getElementById('expire').textContent = 'Expires in ' + formatDate(e.data.date);
+      }
+      if (e.data.type === 'setExpireText') {
+        document.getElementById('expire').textContent = 'Expires in ' + formatDate(e.data.expire);
       }
     });
   </script>
