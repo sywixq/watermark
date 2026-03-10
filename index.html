@@ -11,39 +11,60 @@
     height: 100vh;
   }
   .bar {
+    --bar-radius: 7px;
     position: fixed;
-    top: 10px;
-    left: 12px;
+    top: 8px;
+    right: 8px;
     display: inline-flex;
     align-items: center;
-    height: 32px;
-    padding: 0 4px;
-    background: linear-gradient(180deg, rgba(18, 18, 20, 0.82), rgba(10, 10, 12, 0.88));
-    border: 1px solid rgba(255, 200, 80, 0.22);
-    border-radius: 7px;
+    height: 30px;
+    padding: 0;
+    background: rgba(22, 22, 24, 0.6);
+    border-radius: var(--bar-radius);
     overflow: hidden;
+    clip-path: inset(0 round var(--bar-radius));
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    isolation: isolate;
+    transform: translate3d(0, 0, 0);
     font-family: Arial, sans-serif;
     color: #d7d7d7;
-    backdrop-filter: blur(1.5px);
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.45) inset;
+  }
+  .bar::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: #ff1f1f;
+    border-radius: var(--bar-radius) 0 0 var(--bar-radius);
+    z-index: 2;
   }
   .cell {
     display: flex;
     align-items: center;
     height: 100%;
-    padding: 0 11px;
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 0 12px;
+    border-right: 1px solid rgba(255, 255, 255, 0.14);
   }
   .cell:last-child {
     border-right: none;
   }
   .logo-section {
-    padding: 0 10px 0 8px;
-    gap: 6px;
+    position: relative;
+    background: rgba(22, 22, 24, 1);
+    padding: 0 14px 0 14px;
+    gap: 7px;
+    border-right: none;
+    border-radius: 0 6px 6px 0;
+    overflow: hidden;
+  }
+  .logo-section + .cell {
+    border-left: 1px solid rgba(255, 255, 255, 0.14);
   }
   .logo-image {
     display: block;
-    height: 12px;
+    height: 30px;
     width: auto;
     filter: brightness(0) invert(1);
   }
@@ -51,18 +72,19 @@
     font-size: 12px;
     font-weight: 400;
     line-height: 1;
-    color: #d6d6d6;
+    color: #e5e7ed;
     letter-spacing: 0;
+    transform: translateY(-0.5px);
   }
   .info {
     font-size: 12px;
     font-weight: 400;
     line-height: 1;
-    color: #d1d1d1;
+    color: #d9d9db;
     white-space: nowrap;
   }
   .info.expires {
-    color: #d7d7d7;
+    color: #d9d9db;
     font-weight: 400;
   }
 </style>
@@ -70,10 +92,8 @@
 <body>
   <div class="bar">
     <div class="logo-section cell">
-      <img class="logo-image" src="https://files.catbox.moe/ad6mrr.png" alt="REX logo">
-      <span class="brand">Rex</span>
+      <span class="brand">Rex.wtf</span>
     </div>
-    <div class="info cell" id="name">ireasses</div>
     <div class="info cell" id="pid">01940</div>
     <div class="info cell" id="date">--</div>
     <div class="info expires cell" id="expire">Expires in 11-03-2026</div>
@@ -87,20 +107,6 @@
         if (val) return val;
       }
       return '';
-    }
-
-    function autoUsername() {
-      var fromQuery = readQuery(['username', 'name', 'user']);
-      if (fromQuery) return fromQuery;
-
-      var fromLocal = localStorage.getItem('rex_username') || localStorage.getItem('username');
-      if (fromLocal) return fromLocal;
-
-      if (typeof window.__REX_USERNAME__ === 'string' && window.__REX_USERNAME__) {
-        return window.__REX_USERNAME__;
-      }
-
-      return 'User';
     }
 
     function autoPlayerId() {
@@ -139,7 +145,6 @@
       document.getElementById('date').textContent = getTodayText();
     }
 
-    document.getElementById('name').textContent = autoUsername();
     document.getElementById('pid').textContent = autoPlayerId();
     var expireText = autoExpire();
     if (expireText) {
@@ -150,12 +155,6 @@
 
     window.addEventListener('message', function(e) {
       if (!e.data) return;
-      if (e.data.type === 'setName') {
-        document.getElementById('name').textContent = e.data.name;
-      }
-      if (e.data.type === 'setUsername') {
-        document.getElementById('name').textContent = e.data.username;
-      }
       if (e.data.type === 'setPlayerId') {
         document.getElementById('pid').textContent = e.data.id;
       }
