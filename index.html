@@ -15,30 +15,34 @@
 .watermark {
   position: fixed;
   top: 8px;
-  right: 8px;   /* sağa alır */
+  right: 8px;
   display: inline-flex;
   align-items: center;
   height: 30px;
-  border-radius: 7px;
+
+  border-radius: 10px; /* arttırdık */
   overflow: hidden;
-  background: rgba(13, 16, 22, 0.84);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
-  color: #d5d8df;
-  backdrop-filter: blur(2px);
+
+  background: rgba(20, 24, 32, 0.95); /* daha parlak */
+  border: 1px solid rgba(255, 255, 255, 0.18); /* daha görünür */
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.45); /* iç shadow yerine dış shadow */
+
+  color: #e7eaf0;
 }
 
-  .seg {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    height: 100%;
-    padding: 0 12px;
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
-    font-size: 12px;
-    line-height: 1;
-    white-space: nowrap;
-  }
+.seg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0 12px;
+
+  border-right: 1px solid rgba(255,255,255,0.15);
+
+  font-size: 12px;
+  white-space: nowrap;
+}
   .seg:last-child { border-right: none; }
 
   .seg-main {
