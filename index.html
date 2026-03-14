@@ -5,113 +5,98 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body {
-    background: transparent !important;
-    overflow: hidden;
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
+    background: transparent !important;
+    font-family: Arial, sans-serif;
   }
-  .bar {
-    --bar-radius: 7px;
+
+  .watermark {
     position: fixed;
     top: 8px;
-    right: 8px;
+    left: 50%;
+    transform: translateX(-50%);
     display: inline-flex;
     align-items: center;
     height: 30px;
-    padding: 0;
-    background: rgba(22, 22, 24, 0.6);
-    border-radius: var(--bar-radius);
+    border-radius: 7px;
     overflow: hidden;
-    clip-path: inset(0 round var(--bar-radius));
-    -webkit-mask-image: -webkit-radial-gradient(white, black);
-    isolation: isolate;
-    transform: translate3d(0, 0, 0);
-    font-family: Arial, sans-serif;
-    color: #d7d7d7;
+    background: rgba(13, 16, 22, 0.84);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35) inset;
+    color: #d5d8df;
+    backdrop-filter: blur(2px);
   }
-  .bar::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: #ff1f1f;
-    border-radius: var(--bar-radius) 0 0 var(--bar-radius);
-    z-index: 2;
-  }
-  .cell {
+
+  .seg {
     display: flex;
     align-items: center;
+    gap: 6px;
     height: 100%;
     padding: 0 12px;
-    border-right: 1px solid rgba(255, 255, 255, 0.14);
-  }
-  .cell:last-child {
-    border-right: none;
-  }
-  .logo-section {
-    position: relative;
-    background: rgba(22, 22, 24, 1);
-    padding: 0 14px 0 14px;
-    gap: 7px;
-    border-right: none;
-    border-radius: 0 6px 6px 0;
-    overflow: hidden;
-  }
-  .logo-section + .cell {
-    border-left: 1px solid rgba(255, 255, 255, 0.14);
-  }
-  .logo-image {
-    display: block;
-    height: 35px;
-    width: auto;
-    transform: translateY(1px);
-    filter: brightness(0) invert(1);
-  }
-  .brand {
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
     font-size: 12px;
-    font-weight: 400;
     line-height: 1;
-    color: #e5e7ed;
-    letter-spacing: 0;
-    transform: translateY(-0.5px);
-  }
-  .info {
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 1;
-    color: #d9d9db;
     white-space: nowrap;
   }
-  .info.expires {
-    color: #d9d9db;
-    font-weight: 400;
+  .seg:last-child { border-right: none; }
+
+  .seg-main {
+    background: rgba(10, 12, 16, 0.92);
+    color: #e7eaf0;
+    font-weight: 600;
+  }
+
+  .icon {
+    width: 12px;
+    height: 12px;
+    opacity: 0.9;
+    display: block;
+    flex: 0 0 auto;
+  }
+
+  .text {
+    transform: translateY(-0.3px);
   }
 </style>
 </head>
 <body>
-  <div class="bar">
-    <div class="logo-section cell">
-      <img class="logo-image" src="https://files.catbox.moe/ad6mrr.png" alt="REX logo">
+  <div class="watermark">
+    <div class="seg seg-main">
+      <img class="icon" src="https://api.iconify.design/material-symbols/diamond-rounded.svg?color=%23ff1f1f" alt="logo">
+      <span class="text">Rex.lua</span>
     </div>
-    <div class="info cell" id="pid">parlaklığı arttır rex yazısını gör kardsm</div>
-    <div class="info cell" id="date">--</div>
-    <div class="info expires cell" id="expire">Expires in ananisikince</div>
+
+    <div class="seg">
+      <img class="icon" src="https://api.iconify.design/material-symbols/person-rounded.svg?color=%23ff1f1f" alt="username">
+      <span class="text" id="pid">parlaklığı arttır rex yazısını gör kardeşim</span>
+    </div>
+
+    <div class="seg">
+      <img class="icon" src="https://api.iconify.design/material-symbols/workspace-premium-rounded.svg?color=%23ff1f1f" alt="lifetime">
+      <span class="text" id="expire">Lifetime</span>
+    </div>
+
+    <div class="seg">
+      <img class="icon" src="https://api.iconify.design/material-symbols/calendar-month-rounded.svg?color=%23ff1f1f" alt="today">
+      <span class="text" id="date">--</span>
+    </div>
+
   </div>
 
   <script>
     function readQuery(keys) {
       var params = new URLSearchParams(window.location.search);
       for (var i = 0; i < keys.length; i++) {
-        var val = params.get(keys[i]);
-        if (val) return val;
+        var value = params.get(keys[i]);
+        if (value) return value;
       }
       return '';
     }
 
     function autoPlayerId() {
-      return readQuery(['pid', 'id']) || document.getElementById('pid').textContent;
+      return readQuery(['pid', 'id', 'username', 'name', 'user']) || document.getElementById('pid').textContent;
     }
 
     function autoExpire() {
@@ -156,9 +141,17 @@
 
     window.addEventListener('message', function(e) {
       if (!e.data) return;
+
+      if (e.data.type === 'setName') {
+        document.getElementById('pid').textContent = e.data.name;
+      }
+      if (e.data.type === 'setUsername') {
+        document.getElementById('pid').textContent = e.data.username;
+      }
       if (e.data.type === 'setPlayerId') {
         document.getElementById('pid').textContent = e.data.id;
       }
+
       if (e.data.type === 'setDate') {
         document.getElementById('date').textContent = formatDate(e.data.date);
       }
@@ -168,6 +161,7 @@
       if (e.data.type === 'setExpireText') {
         document.getElementById('expire').textContent = 'Expires in ' + formatDate(e.data.expire);
       }
+
     });
   </script>
 </body>
