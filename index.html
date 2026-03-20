@@ -25,14 +25,12 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.7);
   }
 
-  /* Sol kırmızı çizgi */
   .red-bar {
     width: 3px;
     background: #c0000a;
     flex: 0 0 auto;
   }
 
-  /* Brand bloğu */
   .brand {
     display: flex;
     align-items: center;
@@ -56,7 +54,6 @@
     letter-spacing: 0.3px;
   }
 
-  /* Sağ bilgi bloğu */
   .info {
     display: flex;
     align-items: center;
@@ -88,32 +85,20 @@
     <div class="red-bar"></div>
 
     <div class="brand">
-      <!-- Kendi logo linkini buraya yaz -->
       <img class="brand-logo" id="logo" src="https://cdn.discordapp.com/attachments/1474827867455098933/1484322181402984651/Yeni_Proje_1.png?ex=69be7701&is=69bd2581&hm=70ed9c00ac7c87d0141c5fe6728ad8dcfdc31e41db7f91df3215b77f65eae1b4&animated=true" alt="logo" onerror="this.style.display='none'">
       <span class="brand-name">THE BEST</span>
     </div>
 
     <div class="info">
-      <div class="seg" id="username">parlakligiarttirgorkankarexi</div>
+      <div class="seg" id="pid">...</div>
       <div class="sep"></div>
-      <div class="seg" id="uid">0156</div>
-      <div class="sep"></div>
-      <div class="seg" id="date">--</div> 
+      <div class="seg" id="date">--</div>
       <div class="sep"></div>
       <div class="seg" id="expire">Never expires</div>
     </div>
   </div>
 
   <script>
-    function readQuery(keys) {
-      var params = new URLSearchParams(window.location.search);
-      for (var i = 0; i < keys.length; i++) {
-        var v = params.get(keys[i]);
-        if (v) return v;
-      }
-      return '';
-    }
-
     function getTodayText() {
       var now = new Date();
       return now.toLocaleDateString('en-US', {
@@ -121,10 +106,7 @@
       }).replace(',', '');
     }
 
-    document.getElementById('username').textContent = readQuery(['username','name','user','pid']) || 'parlakligiarttirgorkankarexi';
-    document.getElementById('uid').textContent      = readQuery(['uid','id','hwid'])             || '0156';
-    document.getElementById('expire').textContent   = readQuery(['expire','exp','expires'])      || 'Never expires';
-    document.getElementById('date').textContent     = getTodayText();
+    document.getElementById('date').textContent = getTodayText();
 
     setInterval(function() {
       document.getElementById('date').textContent = getTodayText();
@@ -132,11 +114,24 @@
 
     window.addEventListener('message', function(e) {
       if (!e.data) return;
-      if (e.data.type === 'setUsername') document.getElementById('username').textContent = e.data.username || e.data.name;
-      if (e.data.type === 'setUid')      document.getElementById('uid').textContent      = e.data.uid || e.data.id;
-      if (e.data.type === 'setExpire')   document.getElementById('expire').textContent   = e.data.expire || e.data.text;
-      if (e.data.type === 'setDate')     document.getElementById('date').textContent     = e.data.date;
-      if (e.data.type === 'setLogo')     document.getElementById('logo').src             = e.data.url;
+      var d = e.data;
+
+      // Lua: setPlayerId -> id
+      if (d.type === 'setPlayerId') {
+        document.getElementById('pid').textContent = d.id || '';
+      }
+
+      // Lua: setExpire -> date
+      if (d.type === 'setExpire') {
+        var val = d.date || d.expire || d.text || '';
+        document.getElementById('expire').textContent = val || 'Never expires';
+      }
+
+      // Fallback tipler
+      if (d.type === 'setName')     document.getElementById('pid').textContent     = d.name || '';
+      if (d.type === 'setUsername') document.getElementById('pid').textContent     = d.username || d.name || '';
+      if (d.type === 'setDate')     document.getElementById('date').textContent    = d.date || getTodayText();
+      if (d.type === 'setLogo')     document.getElementById('logo').src            = d.url || '';
     });
   </script>
 
